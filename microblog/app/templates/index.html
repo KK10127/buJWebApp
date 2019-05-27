@@ -1,14 +1,6 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    {% if title %}
-    <title>{{ title }} - Microblog</title>
-    {% else %}
-    <title>Welcome to Microblog!</title>
-    {% endif %}
-  </head>
-  <body>
+{% extends "base.html" %}
 
+{% block content %}
     <h1>Hi, {{ user.username }}!</h1>
 
     <!-- usage of the for mechanism! -->
@@ -19,5 +11,4 @@
       </p>
     </div>
     {% endfor %}
-  </body>
-</html>
+{% endblock %}
