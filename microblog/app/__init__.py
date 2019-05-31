@@ -9,7 +9,9 @@ app = Flask(__name__)
 # that allows me to keep my configuration in a seperate file.
 #
 # I will use a class for this
-app.config['SECRET_KEY'] = 'you-will-never-guess'
+
+# app.config['SECRET_KEY'] = 'you-will-never-guess'
+app.config.from_object(Config)
 
 # add more variables here as needed
 
