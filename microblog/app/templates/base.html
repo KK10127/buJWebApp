@@ -10,10 +10,16 @@
     {% endif %}
   </head>
   <body>
+
+      <!--
+        updated the href fields to use url_for()
+        because URLS are much more likely to change
+        than view function names
+      -->
       <div class="">
         Microblog:
-        <a href="/index">Home</a>
-        <a href="/login">Login</a>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('login') }}">Login</a>
       </div>
 
       <hr>
