@@ -1,6 +1,10 @@
 from flask import Flask
 from config import Config
 
+# importing things needed for db and migration engine
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+
 app = Flask(__name__)
 
 # Specifying configuration options
@@ -14,6 +18,8 @@ app = Flask(__name__)
 # app.config['SECRET_KEY'] = 'you-will-never-guess'
 app.config.from_object(Config)
 
-# add more variables here as needed
+# setting up db object and migration engine object
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
-from app import routes
+from app import routes, models
