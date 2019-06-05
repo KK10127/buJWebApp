@@ -1,5 +1,5 @@
-from app import db
 from datetime import datetime
+from app import db
 
 # this class inherits from db.Model, a base class
 class User(db.Model):
