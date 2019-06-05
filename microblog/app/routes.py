@@ -1,8 +1,15 @@
-from flask import render_template, flash, redirect, url_for
+from flask import render_template, flash, redirect, url_for, request
 from app import app
 from app.forms import LoginForm
+
+from flask_login import current_user, login_user, logout_user, login_required
+from app.models import User
+
+from werkzeug.urls import url_parse
+
 @app.route('/')
 @app.route('/index')
+@login_required
 def index():
     user = {'username': 'Miguel'}
 
@@ -28,13 +35,19 @@ def index():
             'body':'What is this blog?'
         }
     ]
-    return render_template('index.html', title = 'Home',
-        user = user, posts = posts)
+    return render_template('index.html', title = 'Home Page', posts = posts)
 
 # This tells Flask that this view function accepts GET and POST requests,
 # overriding the default, which is to accept only GET requests.
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+
+    # these two lines deal with the weird situation that an already logged in
+    # user navigates to the '/login' URL of my app (which is clearly a mistake)
+    # so I redirect them to the home page.
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+
     # creating a form object
     form = LoginForm()
 
@@ -44,10 +57,24 @@ def login():
     # template in the last line of the function
     if form.validate_on_submit():
 
-        # the flash() function is a useful way to show a message to the user.
-        # alot of applications use this technique to let the user know if some
-        # action has been successful or not.
-        flash('Login requested for user {}, remember_me = {}'.format(
-            form.username.data, form.remember_me.data))
-        return redirect(url_for('index'))
+        user = User.query.filter_by(username = form.username.data).first()
+
+        if user is None or not user.check_password(form.password.data):
+            # the flash() function is a useful way to show a message to the user.
+            # alot of applications use this technique to let the user know if some
+            # action has been successful or not.
+            flash('Invalid username or password!')
+            return redirect(url_for('login'))
+
+        login_user(user, remember = form.remember_me.data)
+        next_page = request.args.get('next')
+
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('index')
+        return redirect(next_page)
     return render_template('login.html', title = 'Sign In', form = form)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))

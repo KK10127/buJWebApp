@@ -1,11 +1,15 @@
 from flask import Flask
 from config import Config
+from flask_login import LoginManager
 
 # importing things needed for db and migration engine
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
 app = Flask(__name__)
+
+login = LoginManager(app)
+login.login_view = 'login'
 
 # Specifying configuration options
 # I will enforce the principle of 'seperation of concerns'
