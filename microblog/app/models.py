@@ -2,6 +2,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from app import db, login
 from flask_login import UserMixin
+from hashlib import md5
 
 @login.user_loader  # this decorator registers the user loaded with Flask-Login
 def load_user(id):
@@ -30,6 +31,12 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    # this method returns the URL of the user's avatar image, scaled to the
+    # requested size in pixels.
+    def avatar(self,size):
+        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+        return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(digest, size)
 
 # The Post class will represent blog posts written by users. The 'timestamp'
 # field is going to be idexed, which is useful if I want to retrieve posts in
