@@ -93,10 +93,14 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form = form)
 
+# this app decorator has the dynamic component
+# <username>. Flask will accept any text in
+# that portion of the URL, and will invoke the
+# view function with the actual text as an arg.
 @app.route('/user/<username>')
-@login_required
+@login_required # login must be required to view a profile!
 def user(username):
-    user = User.query.filter_by(username=username).first_404()
+    user = User.query.filter_by(username=username).first_or_404()
     posts = [
         {'author':user, 'body':'Test post #1'},
         {'author':user, 'body':'Test post #2'}
