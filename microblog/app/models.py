@@ -8,6 +8,13 @@ from hashlib import md5
 def load_user(id):
     return User.query.get(int(id))
 
+# NOTE: I am not declaring this table as a model, like I did for the
+# users and posts tables. Since this is an auxiliary table that has
+# no data other than the foreign keys, I created it without an
+# associated model class.
+followers = db.Table('followers', db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('followed_id', db.Integer, db.ForeignKey('user.id')))
+
 # this class inherits from db.Model, a base class
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -17,11 +24,12 @@ class User(UserMixin, db.Model):
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime, default = datetime.utcnow)
 
-    #
+    # Now I declare the many-to-many relationship in the users table
+    followed = db.relationship('User', secondary=followers, primaryjoin=(followers.c.follower_id == id),
+        secondaryjoin=(followers.c.followed_id == id),
+        backref=db.backref('followers', lazy='dynamic'), lazy = 'dynamic')
+
     posts = db.relationship('Post', backref ='author',lazy='dynamic')
-
-
-
 
     # this method tells python how to print objects of this class, which is
     # going to be useful for debugging.
