@@ -11,6 +11,8 @@ import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
 
+from flask_bootstrap import Bootstrap
+
 app = Flask(__name__)
 
 login = LoginManager(app)
@@ -60,3 +62,5 @@ if not app.debug:
 
         app.logger.setLevel(logging.INFO)
         app.logger.info('Microblog startup')
+
+bootstrap = Bootstrap(app)
